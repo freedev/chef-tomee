@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: hadoop-hue-hive
-# Recipe:: default
+# Cookbook Name:: tomee
+# Recipe:: common-packages
 #
-# Copyright (C) 2014 YOUR_NAME
+# Copyright (C) 2014 Vincenzo D'Amore
 #
 # All rights reserved - Do Not Redistribute
 #

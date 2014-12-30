@@ -139,15 +139,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :oracle => {
           :accept_oracle_download_terms => true
         }
+      },
+      :tomcat => {
+        :base_version => 7,
+        :instances => {
+          "tomcat" => {
+            :shutdown_port => 8005
+          }
+        }
       }
     }
 
     chef.run_list = [
       'recipe[chef-tomee::apt-get-update]',
       'recipe[chef-tomee::common-packages]',
-      'recipe[java::default]',
-      'recipe[maven::default]',
-      'recipe[chef-tomee::tomee]'
+      'recipe[java::default]'
+#      'recipe[maven::default]',
+#      'recipe[tomcat::default]'
     ]
   end
 end
