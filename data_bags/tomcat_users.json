@@ -1,0 +1,9 @@
+{
+  "id": "reset",
+  "password": "supersecret",
+  "roles": [
+    "manager",
+    "admin"
+  ]
+}
+
