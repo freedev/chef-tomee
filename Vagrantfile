@@ -129,11 +129,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef.data_bags_path = "#{current_dir}/data_bags"
 
     chef.json = {
-      mysql: {
-        server_root_password: 'rootpass',
-        server_debian_password: 'debpass',
-        server_repl_password: 'replpass'
-      },
       :java => {
         :install_flavor => 'oracle',
         :jdk_version => 8,
