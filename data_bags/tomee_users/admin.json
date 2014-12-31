@@ -3,7 +3,8 @@
   "password": "supersecret",
   "roles": [
     "manager",
-    "admin"
+    "admin",
+    "manager-gui"
   ]
 }
 
