@@ -84,3 +84,6 @@ attribute :lib_dir,
   :kind_of => String
 attribute :endorsed_dir,
   :kind_of => String
+attribute :jsvc,
+  :kind_of => String
+  

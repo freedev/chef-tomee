@@ -10,7 +10,7 @@ action :configure do
    :max_threads, :ssl_max_threads, :ssl_cert_file, :ssl_key_file,
    :ssl_chain_files, :keystore_file, :keystore_type, :truststore_file,
    :truststore_type, :certificate_dn, :loglevel, :tomee_auth, :user,
-   :group, :tmp_dir, :lib_dir, :endorsed_dir].each do |attr|
+   :group, :tmp_dir, :lib_dir, :endorsed_dir, :jsvc].each do |attr|
     if not new_resource.instance_variable_get("@#{attr}")
       new_resource.instance_variable_set("@#{attr}", node['tomee'][attr])
     end
@@ -41,8 +41,8 @@ action :configure do
     mode '0755'
   end
 
-  template "#{new_resource.home}/env_#{instance}.sh" do
-    source 'env_tomee.sh.erb'
+  template "#{new_resource.home}/bin/setenv.sh" do
+    source 'setenv_tomee.sh.erb'
     variables ({
       :user => new_resource.user,
       :group => new_resource.group,
@@ -53,7 +53,8 @@ action :configure do
       :tmp_dir => new_resource.tmp_dir,
       :authbind => new_resource.authbind,
       :catalina_options => new_resource.catalina_options,
-      :endorsed_dir => new_resource.endorsed_dir
+      :endorsed_dir => new_resource.endorsed_dir,
+      :jsvc => new_resource.jsvc
     })
     owner "#{new_resource.user}"
     group "#{new_resource.group}"

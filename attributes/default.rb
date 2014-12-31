@@ -34,6 +34,7 @@ default['tomee']['loglevel'] = 'INFO'
 default['tomee']['tomee_auth'] = 'true'
 default['tomee']['instances'] = {}
 default['tomee']['run_base_instance'] = true
+default['tomee']['jsvc'] = "/usr/bin/jsvc"
 
 default['tomee']['home'] = '/opt/tomee'
 default['tomee']['base'] = '/opt/tomee'

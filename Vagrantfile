@@ -155,7 +155,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       'recipe[tomee::apt-get-update]',
       'recipe[tomee::common-packages]',
       'recipe[java::default]',
-      'recipe[tomee::chef-shell-debug]'
+      'recipe[tomee::tomee]'
 #      'recipe[maven::default]',
 #      'recipe[tomcat::default]'
     ]

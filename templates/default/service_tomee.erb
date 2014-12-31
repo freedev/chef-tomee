@@ -103,7 +103,7 @@ if [ -z "${JSSE_HOME}" -a -r "${JAVA_HOME}/jre/lib/jsse.jar" ]; then
 fi
 
 catalina_sh() {
-  $DAEMON_TOMEE $1
+  bash -x $DAEMON_TOMEE $1
 	status="$?"
 	set +a -e
 	return $status
@@ -122,9 +122,9 @@ case "$1" in
 	fi
 
 	  log_daemon_msg "Starting $DESC" "$NAME"
-    set +e
-    catalina_sh start
-    set -e
+   set +e
+   catalina_sh start
+   set -e
 	;;
   stop)
 	  log_daemon_msg "Stopping $DESC" "$NAME"
