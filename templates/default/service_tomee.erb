@@ -18,7 +18,7 @@ set -e
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 NAME=tomee
 DESC="Tomee"
-ENV_TOMEE="/opt/<%= @instance %>/env_tomee.sh"
+ENV_TOMEE="/opt/<%= @instance %>/bin/setenv.sh"
 DAEMON_TOMEE="/opt/<%= @instance %>/bin/daemon.sh"
 JVM_TMP="/tmp/<%= @instance %>-tmp"
 
@@ -72,12 +72,15 @@ if [ -f "$ENV_TOMEE" ]; then
 	. "$ENV_TOMEE"
 fi
 
+if [ ! -d "$CATALINA_BASE/conf" ]; then
+  log_failure_msg "invalid CATALINA_BASE: $CATALINA_BASE"
+  exit 1
+fi
+
 if [ ! -f "$CATALINA_HOME/bin/bootstrap.jar" ]; then
 	log_failure_msg "$NAME is not installed"
 	exit 1
 fi
-
-POLICY_CACHE="$CATALINA_BASE/work/catalina.policy"
 
 if [ -z "$CATALINA_TMPDIR" ]; then
 	CATALINA_TMPDIR="$JVM_TMP"
@@ -87,15 +90,6 @@ fi
 if [ -n "$JSP_COMPILER" ]; then
 	JAVA_OPTS="$JAVA_OPTS -Dbuild.compiler=\"$JSP_COMPILER\""
 fi
-
-SECURITY=""
-if [ "$TOMCAT7_SECURITY" = "yes" ]; then
-	SECURITY="-security"
-fi
-
-# Define other required variables
-CATALINA_PID="/var/run/$NAME.pid"
-CATALINA_SH="$CATALINA_HOME/bin/catalina.sh"
 
 # Look for Java Secure Sockets Extension (JSSE) JARs
 if [ -z "${JSSE_HOME}" -a -r "${JAVA_HOME}/jre/lib/jsse.jar" ]; then
@@ -140,11 +134,11 @@ case "$1" in
 	set -e
         ;;
   restart|force-reload)
-	if [ -f "$CATALINA_PID" ]; then
-		$0 stop
-		sleep 1
-	fi
-	$0 start
+    set +e
+    catalina_sh stop
+    sleep 1
+    catalina_sh start
+    set -e
         ;;
   *)
 	log_success_msg "Usage: $0 {start|stop|restart|force-reload|status}"
