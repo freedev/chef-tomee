@@ -1,5 +1,5 @@
 {
-  "id": "reset",
+  "id": "admin",
   "password": "supersecret",
   "roles": [
     "manager",

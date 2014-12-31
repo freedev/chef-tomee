@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: chef-tomee
+# Cookbook Name:: tomee
 # Recipe:: default
 #
 # Copyright (C) 2014 YOUR_NAME

@@ -1,3 +1,3 @@
 # 0.1.0
 
-Initial release of chef-tomee
+Initial release of tomee

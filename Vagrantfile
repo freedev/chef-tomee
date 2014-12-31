@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
-  config.vm.hostname = 'chef-tomee-berkshelf'
+  config.vm.hostname = 'tomee-berkshelf'
 
   # Set the version of chef to install using the vagrant-omnibus plugin
   # NOTE: You will need to install the vagrant-omnibus plugin:
@@ -57,6 +57,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--name", vb_conf['vb_name']]
       vb.customize ["modifyvm", :id, "--vram", vb_conf['vb_vram']]
       vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+#      vb.customize ["modifyvm", :id, "--snapshotfolder", "default"]
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
 
     end 
@@ -151,9 +152,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     }
 
     chef.run_list = [
-      'recipe[chef-tomee::apt-get-update]',
-      'recipe[chef-tomee::common-packages]',
-      'recipe[java::default]'
+      'recipe[tomee::apt-get-update]',
+      'recipe[tomee::common-packages]',
+      'recipe[java::default]',
+      'recipe[tomee::chef-shell-debug]'
 #      'recipe[maven::default]',
 #      'recipe[tomcat::default]'
     ]

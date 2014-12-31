@@ -1,10 +1,14 @@
-# chef-tomee-cookbook
+# tomee-cookbook
 
-TODO: Enter the cookbook description here.
+Installs and configures Apache TomEE, all-Apache Java EE 6 Web Profile.
 
 ## Supported Platforms
 
-TODO: List your supported platforms.
+- Debian, Ubuntu (OpenJDK, Oracle)
+- CentOS 6+, Red Hat 6+, Fedora, Amaxon (OpenJDK, Oracle), Scientific Linux 6
+
+### Dependencies
+- java
 
 ## Attributes
 
@@ -16,7 +20,7 @@ TODO: List your supported platforms.
     <th>Default</th>
   </tr>
   <tr>
-    <td><tt>['chef-tomee']['bacon']</tt></td>
+    <td><tt>['tomee']['bacon']</tt></td>
     <td>Boolean</td>
     <td>whether to include bacon</td>
     <td><tt>true</tt></td>
@@ -25,14 +29,14 @@ TODO: List your supported platforms.
 
 ## Usage
 
-### chef-tomee::default
+### tomee::default
 
-Include `chef-tomee` in your node's `run_list`:
+Include `tomee` in your node's `run_list`:
 
 ```json
 {
   "run_list": [
-    "recipe[chef-tomee::default]"
+    "recipe[tomee::default]"
   ]
 }
 ```

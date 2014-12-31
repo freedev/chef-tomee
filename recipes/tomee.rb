@@ -12,13 +12,12 @@ require 'uri'
 tomee_user = node['tomee']['user']
 tomee_group = node['tomee']['group']
 tomee_user_home = "/home/#{tomee_user}"
-tomee_url = node['tomee']['tomee_plume_url']
+tomee_url = node['tomee']['tomee_url']
 tomee_uri = URI.parse(tomee_url)
 tomee_filename = File.basename(tomee_uri.path)
 tomee_basename = File.basename(tomee_uri.path, '.tar.gz')
-basedir = '/opt'
 tmpdir = '/tmp'
-tomee_basedir = "#{basedir}/#{tomee_basename}"
+tomee_homedir = node['tomee']['home']
 
 group tomee_group
 
@@ -35,7 +34,7 @@ remote_file "#{tmpdir}/#{tomee_filename}" do
   source tomee_url
 end
 
-directory tomee_basedir do
+directory tomee_homedir do
   owner tomee_user
   group tomee_group
   action :create
@@ -46,7 +45,16 @@ execute "tar-install-#{tomee_filename}" do
   group tomee_group
   command "tar xzf #{tmpdir}/#{tomee_filename} --strip 1"
   action :run
-  cwd tomee_basedir
+  cwd tomee_homedir
   returns 0
+end
+
+tomee_instance "base" do
+  port node['tomee']['port']
+  proxy_port node['tomee']['proxy_port']
+  ssl_port node['tomee']['ssl_port']
+  ssl_proxy_port node['tomee']['ssl_proxy_port']
+  ajp_port node['tomee']['ajp_port']
+  shutdown_port node['tomee']['shutdown_port']
 end
 
