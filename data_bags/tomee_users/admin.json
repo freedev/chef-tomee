@@ -4,7 +4,8 @@
   "roles": [
     "manager",
     "admin",
-    "manager-gui"
+    "manager-gui",
+    "admin-gui"
   ]
 }
 
