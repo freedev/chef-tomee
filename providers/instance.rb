@@ -1,5 +1,4 @@
 action :configure do
-  puts "called tomee_instance"
 
   base_instance = "tomee"
 

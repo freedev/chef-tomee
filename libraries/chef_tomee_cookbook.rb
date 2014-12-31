@@ -51,7 +51,6 @@ class Chef
       #
       # @return [Array<Chef::DataBagItem>, Array<Chef::EncryptedDataBagItem>]
       def users
-        puts "read users #{USERS_DATA_BAG}"
         @users ||= find_users
       end
 
@@ -71,7 +70,6 @@ class Chef
       def find_users
         users = if Chef::Config[:solo]
                   data_bag = Chef::DataBag.load(USERS_DATA_BAG)
-                  puts "data_bag size "+data_bag.length.to_s
                   data_bag.keys.map do |name|
                     Chef::DataBagItem.load(USERS_DATA_BAG, name)
                   end
@@ -85,10 +83,7 @@ class Chef
                   decrypt_items(items)
                 end
 
-        puts "ALLORA read users...."+Chef::Config[:solo].to_s
-        puts users.length
         users.each { |user| validate_user_item(user) }
-        users.each { |user| puts user.id }
         users
       end
 
