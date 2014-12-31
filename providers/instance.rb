@@ -40,6 +40,12 @@ action :configure do
     mode '0755'
   end
 
+  service "#{instance}" do
+    provider Chef::Provider::Service::Init
+    subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
+    supports :restart => true, :start => true, :stop => true
+  end
+     
   template "#{new_resource.home}/bin/setenv.sh" do
     source 'setenv_tomee.sh.erb'
     variables ({
@@ -58,9 +64,9 @@ action :configure do
     owner "#{new_resource.user}"
     group "#{new_resource.group}"
     mode '0755'
-#    notifies :restart, "service[#{instance}]"
+    notifies :restart, "service[#{instance}]"
   end   
-     
+
   template "#{node["tomee"]["config_dir"]}/tomcat-users.xml" do
     source 'tomee-users.xml.erb'
     mode '0644'
@@ -68,25 +74,13 @@ action :configure do
       :users => TomeeCookbook.users,
       :roles => TomeeCookbook.roles
     )
-#    notifies :restart, "service[tomcat]"
+    notifies :restart, "service[#{instance}]"
   end
   
-#service "#{instance}" do
-#  case node['platform']
-#  when 'centos', 'redhat', 'fedora', 'amazon'
-#    service_name "#{instance}"
-#    supports :restart => true, :status => true
-#  when 'debian', 'ubuntu'
-#    service_name "#{instance}"
-#    supports :restart => true, :reload => false, :status => true
-#  when 'smartos'
-#    # SmartOS doesn't support multiple instances
-#    service_name 'tomcat'
-#    supports :restart => false, :reload => false, :status => true
-#  else
-#    service_name "#{instance}"
-#  end
-#  action [:start, :enable]
-#end
+  service "#{instance}" do
+      service_name "#{instance}"
+      supports :restart => true, :status => true
+    action [:start]
+  end
    
 end
