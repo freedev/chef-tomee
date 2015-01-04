@@ -33,7 +33,8 @@ action :configure do
   template "/etc/init.d/#{instance}" do
     source 'service_tomee.erb'
     variables ({
-      :instance => instance
+      :instance => instance,
+      :log_dir => new_resource.log_dir
     })
     owner "#{new_resource.user}"
     group "#{new_resource.group}"
@@ -41,11 +42,19 @@ action :configure do
   end
 
   service "#{instance}" do
-    provider Chef::Provider::Service::Init
-    subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
-    supports :restart => true, :start => true, :stop => true
+    service_name instance
+    case node['platform']
+    when 'centos', 'redhat', 'fedora', 'amazon'
+      provider Chef::Provider::Service::Init::Redhat
+      subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
+      supports :restart => true, :start => true, :stop => true
+    when 'debian', 'ubuntu'
+      provider Chef::Provider::Service::Init::Debian
+      subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
+      supports :restart => true, :start => true, :stop => true
+    end
   end
-     
+       
   template "#{new_resource.home}/bin/setenv.sh" do
     source 'setenv_tomee.sh.erb'
     variables ({
@@ -64,7 +73,7 @@ action :configure do
     owner "#{new_resource.user}"
     group "#{new_resource.group}"
     mode '0755'
-    notifies :restart, "service[#{instance}]"
+#    notifies :restart, "service[#{instance}]"
   end   
 
   template "#{node["tomee"]["config_dir"]}/tomcat-users.xml" do
@@ -74,13 +83,14 @@ action :configure do
       :users => TomeeCookbook.users,
       :roles => TomeeCookbook.roles
     )
-    notifies :restart, "service[#{instance}]"
+#    notifies :restart, "service[#{instance}]"
   end
   
   service "#{instance}" do
-      service_name "#{instance}"
-      supports :restart => true, :status => true
-    action [:start]
+    action [:restart, :enable]
+#    notifies :run, "service[#{instance}]", :immediately
+#    retries 4
+#    retry_delay 30
   end
-   
+     
 end
