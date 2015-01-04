@@ -40,7 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if provider == :virtualbox
     puts "* Using virtualbox *"
     config.vm.box = 'chef/ubuntu-14.04'
-    config.vm.synced_folder ".", "/vagrant", type: "nfs"
+#    config.vm.synced_folder ".", "/vagrant", type: "nfs"
 
     vb_conf={}
     vb_conf['vb_cpu_count'] = "2"
@@ -147,7 +147,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     }
 
     chef.run_list = [
-      'recipe[tomee::apt-get-update]',
       'recipe[tomee::common-packages]',
       'recipe[java::default]',
       'recipe[tomee::tomee]'
