@@ -15,7 +15,7 @@
     }
   },
   "run_list": [ 
-//    "recipe[apt]", 
+    "recipe[tomee::common-packages]", 
     "recipe[java]", 
 //    "recipe[tomcat]"
 //    "recipe[tomcat::users]" 
