@@ -1,11 +1,13 @@
 
+# set run_base_instance = false if you want create multiple instances 
+default["tomee"]["run_base_instance"] = true
 default["tomee"]["name"]="tomee"
 default["tomee"]["user"]="tmuser"
 default["tomee"]["group"]="tomee"
 
 default["tomee"]["tomee_url"] = "http://mirror.nohup.it/apache/tomee/tomee-1.7.1/apache-tomee-1.7.1-plume.tar.gz"
 
-default["tomee"]["port"] = 9090
+default["tomee"]["port"] = 8080
 default["tomee"]["proxy_port"] = nil
 default["tomee"]["ssl_port"] = 8443
 default["tomee"]["ssl_proxy_port"] = nil
@@ -35,7 +37,6 @@ default["tomee"]["certificate_dn"] = "cn=localhost"
 default["tomee"]["loglevel"] = "INFO"
 default["tomee"]["tomcat_auth"] = "true"
 default["tomee"]["instances"] = {}
-default["tomee"]["run_base_instance"] = true
 
 default["tomee"]["home"] = "/opt/#{node["tomee"]["name"]}"
 default["tomee"]["base"] = "/opt/#{node["tomee"]["name"]}"
