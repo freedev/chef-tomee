@@ -57,6 +57,36 @@ This cookbook is inspired and built on Opscode's Tomcat cookbook.
     <td>HTTP port number</td>
     <td><tt>8080</tt></td>
   </tr>
+  <tr>
+    <td><tt>['tomee']['proxy_port']</tt></td>
+    <td>Integer</td>
+    <td>HTTP proxy port number</td>
+    <td><tt>nil</tt></td>
+  </tr>
+  <tr>
+    <td><tt>['tomee']['ssl_port']</tt></td>
+    <td>Integer</td>
+    <td>HTTP port number</td>
+    <td><tt>8443</tt></td>
+  </tr>
+  <tr>
+    <td><tt>['tomee']['ssl_proxy_port']</tt></td>
+    <td>Integer</td>
+    <td>HTTP proxy port number</td>
+    <td><tt>nil</tt></td>
+  </tr>
+  <tr>
+    <td><tt>['tomee']['ajp_port']</tt></td>
+    <td>Integer</td>
+    <td>ajp port number</td>
+    <td><tt>8009</tt></td>
+  </tr>
+  <tr>
+    <td><tt>['tomee']['shutdown_port']</tt></td>
+    <td>Integer</td>
+    <td>Shutdown port</td>
+    <td><tt>8005</tt></td>
+  </tr>
 </table>
 
 ## Usage
