@@ -1,7 +1,8 @@
 # tomee
 
 This cookbook installs and configures Apache TomEE. 
-It starts downloading TomEE from an tomee_url specified in attributes/default.rb
+It starts downloading TomEE from an tomee_url specified in attributes/default.rb.
+
 This cookbook is a beta version inspired on Opscode's Tomcat cookbook.
 
 ## Supported Platforms
