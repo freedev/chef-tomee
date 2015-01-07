@@ -137,14 +137,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :oracle => {
           :accept_oracle_download_terms => true
         }
-      },
-      :tomee => {
-        :instances => {
-          "tomcat" => {
-            :shutdown_port => 8005
-          }
-        }
       }
+#      ,:tomee => {
+#        :instances => {
+#          "tomee1" => {
+#            :port => 8080,
+#            :ssl_port => 8443
+#            :ajp_port => 8009
+#            :shutdown_port => 8005
+#          },
+#          "tomee2" => {
+#            :port => 9080,
+#            :ssl_port => 9443
+#            :ajp_port => 9009
+#            :shutdown_port => 9005
+#          }
+#        }
+#      }
     }
 
     chef.run_list = [
