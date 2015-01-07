@@ -1,16 +1,25 @@
 # tomee
 
 This cookbook installs and configures Apache TomEE. 
-It defaults to downloading TomEE from an tomee_url you specify in attributes/default.rb
-This cookbook is inspired and built on Opscode's Tomcat cookbook.
+It starts downloading TomEE from an tomee_url specified in attributes/default.rb
+This cookbook is a beta version inspired on Opscode's Tomcat cookbook.
 
 ## Supported Platforms
 
 - Debian, Ubuntu (OpenJDK, Oracle)
-- CentOS 6+, Red Hat 6+, Fedora, Amaxon (OpenJDK, Oracle), Scientific Linux 6
+- CentOS 6+, Red Hat 6+, Fedora
+
+Used with: Centos (6.2, 6.5) and Ubuntu (14.04)
 
 ### Dependencies
 - java
+
+###Prerequisites
+This cookbook cames with a dependency to java cookbook.
+At end of document there is `run_list` 
+Please make sure that Java has been configured on the machine
+prior to the application any resources or recipes shipped in this
+cookbook.
 
 ## Attributes
 
@@ -93,7 +102,7 @@ This cookbook is inspired and built on Opscode's Tomcat cookbook.
 
 ### tomee::tomee
 
-Include `tomee` in your node's `run_list`:
+Include `tomee` in your node's `run_list`, if you want install Java you must prepend `common-packages` and `java::default` :
 
 ```json
 {
