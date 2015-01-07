@@ -160,8 +160,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       'recipe[tomee::common-packages]',
       'recipe[java::default]',
       'recipe[tomee::tomee]'
-#      'recipe[maven::default]',
-#      'recipe[tomcat::default]'
+#      'recipe[maven::default]'
     ]
   end
 end
