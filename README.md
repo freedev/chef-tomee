@@ -61,14 +61,16 @@ This cookbook is inspired and built on Opscode's Tomcat cookbook.
 
 ## Usage
 
-### tomee::default
+### tomee::tomee
 
 Include `tomee` in your node's `run_list`:
 
 ```json
 {
   "run_list": [
-    "recipe[tomee::default]"
+    'recipe[tomee::common-packages]',
+    'recipe[java::default]',
+    'recipe[tomee::tomee]'
   ]
 }
 ```
