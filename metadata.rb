@@ -3,7 +3,7 @@ maintainer       "Vincenzo D'Amore"
 maintainer_email "v.damore@gmail.com"
 license          'Apache 2.0'
 description      'Installs/Configures TomEE'
-long_description 'Installs/Configures TomEE'
+long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.1.0'
 
 # depends 'apt', '~> 2.6.0'
