@@ -1,6 +1,8 @@
-# tomee-cookbook
+# tomee
 
-Installs and configures Apache TomEE, all-Apache Java EE 6 Web Profile.
+This cookbook installs and configures Apache TomEE. 
+It defaults to downloading TomEE from an tomee_url you specify in attributes/default.rb
+This cookbook is inspired and built on Opscode's Tomcat cookbook.
 
 ## Supported Platforms
 

@@ -2,6 +2,7 @@
   "java" : {
     "install_flavor" : "oracle",
     "jdk_version" : 8,
+//    "url" : "http://my.internal.host/jdk-8u25-linux-x64.tar.gz",
     "oracle" : {
       "accept_oracle_download_terms" : true
     }
@@ -9,7 +10,7 @@
   "tomee" : {
     "instances" : {
       "tomcat" : {
-    	"port" : 8080,
+        "port" : 8080,
         "shutdown_port" : 8005
       }
     }
