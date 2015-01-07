@@ -12,3 +12,9 @@ depends 'java', '~> 1.21'
 # depends 'tomcat', '~> 0.17.0'
 # depends 'net-scp', '~> 1.2.1'
 
+supports "debian", ">= 0.0.0"
+supports "ubuntu", ">= 0.0.0"
+supports "centos", ">= 0.0.0"
+supports "redhat", ">= 0.0.0"
+supports "fedora", ">= 0.0.0"
+supports "amazon", ">= 0.0.0"
