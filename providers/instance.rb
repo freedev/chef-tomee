@@ -109,12 +109,12 @@ action :configure do
     mode '0644'
   end
   
-#  template "#{new_resource.config_dir}/logging.properties" do
-#    source 'logging.properties.erb'
-#    owner 'root'
-#    group 'root'
-#    mode '0644'
-#  end
+  template "#{new_resource.config_dir}/logging.properties" do
+    source 'logging.properties.erb'
+    owner 'root'
+    group 'root'
+    mode '0644'
+  end
     
   service "#{instance}" do
     action [:restart, :enable]
