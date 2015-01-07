@@ -1,6 +1,6 @@
 action :configure do
 
-  base_instance = "tomee"
+  base_instance = "#{node['tomee']['name']}"
 
   # Set defaults for resource attributes from node attributes. We can't do
   # this in the resource declaration because node isn't populated yet when
@@ -8,8 +8,8 @@ action :configure do
   [:catalina_options, :java_options, :use_security_manager, :authbind,
    :max_threads, :ssl_max_threads, :ssl_cert_file, :ssl_key_file,
    :ssl_chain_files, :keystore_file, :keystore_type, :truststore_file,
-   :truststore_type, :certificate_dn, :loglevel, :tomee_auth, :user,
-   :group, :tmp_dir, :lib_dir, :endorsed_dir, :jsvc].each do |attr|
+   :truststore_type, :certificate_dn, :loglevel, :tomcat_auth, :user,
+   :group, :tmp_dir, :lib_dir, :endorsed_dir, :catalina_pid].each do |attr|
     if not new_resource.instance_variable_get("@#{attr}")
       new_resource.instance_variable_set("@#{attr}", node['tomee'][attr])
     end
@@ -34,7 +34,9 @@ action :configure do
     source 'service_tomee.erb'
     variables ({
       :instance => instance,
-      :log_dir => new_resource.log_dir
+      :base => new_resource.base,
+      :log_dir => new_resource.log_dir,
+      :catalina_pid => new_resource.catalina_pid
     })
     owner "#{new_resource.user}"
     group "#{new_resource.group}"
@@ -46,11 +48,11 @@ action :configure do
     case node['platform']
     when 'centos', 'redhat', 'fedora', 'amazon'
       provider Chef::Provider::Service::Init::Redhat
-      subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
+#      subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
       supports :restart => true, :start => true, :stop => true
     when 'debian', 'ubuntu'
       provider Chef::Provider::Service::Init::Debian
-      subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
+#      subscribes :restart, resources(:template => "/etc/init.d/#{instance}")
       supports :restart => true, :start => true, :stop => true
     end
   end
@@ -68,7 +70,7 @@ action :configure do
       :authbind => new_resource.authbind,
       :catalina_options => new_resource.catalina_options,
       :endorsed_dir => new_resource.endorsed_dir,
-      :jsvc => new_resource.jsvc
+      :catalina_pid => new_resource.catalina_pid
     })
     owner "#{new_resource.user}"
     group "#{new_resource.group}"
@@ -85,7 +87,35 @@ action :configure do
     )
 #    notifies :restart, "service[#{instance}]"
   end
+
+  template "#{new_resource.config_dir}/server.xml" do
+    source 'tomee_server.xml.erb'
+      variables ({
+        :port => new_resource.port,
+        :proxy_port => new_resource.proxy_port,
+        :ssl_port => new_resource.ssl_port,
+        :ssl_proxy_port => new_resource.ssl_proxy_port,
+        :ajp_port => new_resource.ajp_port,
+        :shutdown_port => new_resource.shutdown_port,
+        :max_threads => new_resource.max_threads,
+        :ssl_max_threads => new_resource.ssl_max_threads,
+        :keystore_file => new_resource.keystore_file,
+        :keystore_type => new_resource.keystore_type,
+        :tomcat_auth => new_resource.tomcat_auth,
+        :config_dir => new_resource.config_dir,
+      })
+    owner 'root'
+    group 'root'
+    mode '0644'
+  end
   
+#  template "#{new_resource.config_dir}/logging.properties" do
+#    source 'logging.properties.erb'
+#    owner 'root'
+#    group 'root'
+#    mode '0644'
+#  end
+    
   service "#{instance}" do
     action [:restart, :enable]
 #    notifies :run, "service[#{instance}]", :immediately

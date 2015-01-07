@@ -40,6 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if provider == :virtualbox
     puts "* Using virtualbox *"
     config.vm.box = 'chef/ubuntu-14.04'
+#    config.vm.box = 'opscode-centos-6.5'
 #    config.vm.synced_folder ".", "/vagrant", type: "nfs"
 
     vb_conf={}
@@ -132,12 +133,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       :java => {
         :install_flavor => 'oracle',
         :jdk_version => 8,
+        :url => "http://ricette.eluasa.it/jdk-8u25-linux-x64.tar.gz",
         :oracle => {
           :accept_oracle_download_terms => true
         }
       },
-      :tomcat => {
-        :base_version => 7,
+      :tomee => {
         :instances => {
           "tomcat" => {
             :shutdown_port => 8005

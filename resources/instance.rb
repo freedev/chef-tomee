@@ -66,7 +66,7 @@ attribute :certificate_dn,
   :kind_of => String
 attribute :loglevel,
   :kind_of => String
-attribute :tomee_auth,
+attribute :tomcat_auth,
   :kind_of => String,
   :equal_to => ['true', 'false']
 
@@ -84,6 +84,6 @@ attribute :lib_dir,
   :kind_of => String
 attribute :endorsed_dir,
   :kind_of => String
-attribute :jsvc,
+attribute :catalina_pid,
   :kind_of => String
   

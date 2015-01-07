@@ -4,8 +4,12 @@
 # Local modifications will be overwritten by Chef.
 #
 
-JSVC=<%= @jsvc %>
-export JSVC
+# (Optional) Path of the file which should contains the pid
+# of the catalina startup java process, when start (fork) is
+# used
+
+CATALINA_PID="<%= @catalina_pid %>"
+export CATALINA_PID
 
 # Run Tomcat as this user ID. Not setting this or leaving it blank will use the
 # default of tomcat6.
