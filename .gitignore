@@ -20,3 +20,4 @@ bin/*
 .kitchen.local.yml
 *.deb
 *.rpm
+berks-cookbooks/*
