@@ -2,7 +2,7 @@ require 'tmpdir'
 
 action :configure do
 
-  base_instance = "#{node['tomee']['name']}"
+  base_instance = node['tomee']['name']
 
   # Set defaults for resource attributes from node attributes. We can't do
   # this in the resource declaration because node isn't populated yet when
@@ -21,7 +21,7 @@ action :configure do
   if new_resource.name == 'base'
     instance = base_instance
   else
-    instance = "#{new_resource.name}"
+    instance = new_resource.name
     instance.gsub!(/^.*(\\|\/)/, '')
     instance.gsub!(/[^0-9A-Za-z.\-]/, '_')
   end  
@@ -46,14 +46,14 @@ action :configure do
   end
 
   directory new_resource.home do
-    owner "#{new_resource.user}"
-    group "#{new_resource.group}"
+    owner new_resource.user
+    group new_resource.group
     action :create
   end
 
   execute "tar-install-#{tomee_filename}" do
-    user "#{new_resource.user}"
-    group "#{new_resource.group}"
+    user new_resource.user
+    group new_resource.group
     command "tar xzf #{tmpdir}/#{tomee_filename} --strip 1"
     action :run
     cwd new_resource.home
@@ -78,7 +78,7 @@ action :configure do
     mode '0755'
   end
 
-  service "#{instance}" do
+  service instance do
     service_name instance
     case node['platform']
     when 'centos', 'redhat', 'fedora', 'amazon'
@@ -107,8 +107,8 @@ action :configure do
       :endorsed_dir => new_resource.endorsed_dir,
       :catalina_pid => new_resource.catalina_pid
     })
-    owner "#{new_resource.user}"
-    group "#{new_resource.group}"
+    owner new_resource.user
+    group new_resource.group
     mode '0755'
 #    notifies :restart, "service[#{instance}]"
   end   
@@ -139,19 +139,19 @@ action :configure do
         :tomcat_auth => new_resource.tomcat_auth,
         :config_dir => new_resource.config_dir,
       })
-    owner "#{new_resource.user}"
-    group "#{new_resource.group}"
+    owner new_resource.user
+    group new_resource.group
     mode '0644'
   end
   
   template "#{new_resource.config_dir}/logging.properties" do
     source 'logging.properties.erb'
-    owner "#{new_resource.user}"
-    group "#{new_resource.group}"
+    owner new_resource.user
+    group new_resource.group
     mode '0644'
   end
     
-  service "#{instance}" do
+  service instance do
     action [:restart, :enable]
 #    notifies :run, "service[#{instance}]", :immediately
 #    retries 4

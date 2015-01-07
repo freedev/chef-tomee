@@ -25,19 +25,18 @@ user tomee_user do
 end
 
 
-if node['tomee']['run_base_instance']
-  tomee_instance "base" do
-    port node['tomee']['port']
-    proxy_port node['tomee']['proxy_port']
-    ssl_port node['tomee']['ssl_port']
-    ssl_proxy_port node['tomee']['ssl_proxy_port']
-    ajp_port node['tomee']['ajp_port']
-    shutdown_port node['tomee']['shutdown_port']
-  end
+tomee_instance "base" do
+  port node['tomee']['port']
+  proxy_port node['tomee']['proxy_port']
+  ssl_port node['tomee']['ssl_port']
+  ssl_proxy_port node['tomee']['ssl_proxy_port']
+  ajp_port node['tomee']['ajp_port']
+  shutdown_port node['tomee']['shutdown_port']
+  only_if { node['tomee']['run_base_instance'] == true }
 end
 
 node['tomee']['instances'].each do |name, attrs|
-  tomee_instance "#{name}" do
+  tomee_instance name do
     port attrs['port']
     proxy_port attrs['proxy_port']
     ssl_port attrs['ssl_port']

@@ -3,7 +3,7 @@ require "yaml"
 class MyVagrantLib
 
     def initialize()
-    	@required_plugins = %w( vagrant-omnibus vagrant-berkshelf vagrant-lxc )
+    	@required_plugins = %w( vagrant-omnibus vagrant-berkshelf )
     end 
 
     def check_plugins
@@ -11,6 +11,9 @@ class MyVagrantLib
           if Vagrant.has_plugin? plugin
             puts "vagrant plugin #{plugin} already present"
           else
+#            cmd = Mixlib::ShellOut.new("vagrant plugin install #{plugin}")
+#            cmd.run_command
+#            cmd.error!
             system "vagrant plugin install #{plugin}"
           end
         end
