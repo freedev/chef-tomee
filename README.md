@@ -68,9 +68,9 @@ Include `tomee` in your node's `run_list`:
 ```json
 {
   "run_list": [
-    'recipe[tomee::common-packages]',
-    'recipe[java::default]',
-    'recipe[tomee::tomee]'
+    "recipe[tomee::common-packages]",
+    "recipe[java::default]",
+    "recipe[tomee::tomee]"
   ]
 }
 ```
