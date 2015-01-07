@@ -1,5 +1,5 @@
 
-default["tomee"]["name"]="tomee-plume"
+default["tomee"]["name"]="tomee"
 default["tomee"]["user"]="tmuser"
 default["tomee"]["group"]="tomee"
 

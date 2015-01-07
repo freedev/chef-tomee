@@ -1,3 +1,5 @@
+require 'tmpdir'
+
 action :configure do
 
   base_instance = "#{node['tomee']['name']}"
@@ -5,24 +7,57 @@ action :configure do
   # Set defaults for resource attributes from node attributes. We can't do
   # this in the resource declaration because node isn't populated yet when
   # that runs
-  [:catalina_options, :java_options, :use_security_manager, :authbind,
-   :max_threads, :ssl_max_threads, :ssl_cert_file, :ssl_key_file,
-   :ssl_chain_files, :keystore_file, :keystore_type, :truststore_file,
-   :truststore_type, :certificate_dn, :loglevel, :tomcat_auth, :user,
-   :group, :tmp_dir, :lib_dir, :endorsed_dir, :catalina_pid].each do |attr|
+#  [:catalina_options, :java_options, :use_security_manager, :authbind,
+#   :max_threads, :ssl_max_threads, :ssl_cert_file, :ssl_key_file,
+#   :ssl_chain_files, :keystore_file, :keystore_type, :truststore_file,
+#   :truststore_type, :certificate_dn, :loglevel, :tomcat_auth, :user,
+#   :group, :tmp_dir, :lib_dir, :endorsed_dir, :catalina_pid, :tomee_url].each do |attr|
+  node['tomee'].keys.each do |attr|
     if not new_resource.instance_variable_get("@#{attr}")
       new_resource.instance_variable_set("@#{attr}", node['tomee'][attr])
     end
   end 
 
-  instance = base_instance
-  
-  # If they weren't set explicitly, set these paths to the default
-  [:base, :home, :config_dir, :log_dir, :work_dir, :context_dir,
-   :webapp_dir].each do |attr|
-    if not new_resource.instance_variable_get("@#{attr}")
-      new_resource.instance_variable_set("@#{attr}", node["tomee"][attr])
+  if new_resource.name == 'base'
+    instance = base_instance
+  else
+    instance = "#{new_resource.name}"
+    instance.gsub!(/^.*(\\|\/)/, '')
+    instance.gsub!(/[^0-9A-Za-z.\-]/, '_')
+  end  
+
+  if instance != base_instance
+    [:base, :home, :config_dir, :log_dir, :tmp_dir, :work_dir, :context_dir,
+     :webapp_dir, :lib_dir, :endorsed_dir, :catalina_pid].each do |attr|
+      if node["tomee"][attr]
+        new = node["tomee"][attr].sub(/\/tomee(\/|$)/, "/#{instance}\\1")
+        new_resource.instance_variable_set("@#{attr}", new)
+      end
     end
+  end
+
+  tomee_uri = URI.parse(new_resource.tomee_url)
+  tomee_filename = ::File.basename(tomee_uri.path)
+  tomee_basename = ::File.basename(tomee_uri.path, '.tar.gz')
+  tmpdir = Dir.tmpdir
+
+  remote_file "#{tmpdir}/#{tomee_filename}" do
+    source new_resource.tomee_url
+  end
+
+  directory new_resource.home do
+    owner "#{new_resource.user}"
+    group "#{new_resource.group}"
+    action :create
+  end
+
+  execute "tar-install-#{tomee_filename}" do
+    user "#{new_resource.user}"
+    group "#{new_resource.group}"
+    command "tar xzf #{tmpdir}/#{tomee_filename} --strip 1"
+    action :run
+    cwd new_resource.home
+    returns 0
   end
 
   directory new_resource.endorsed_dir do
@@ -38,8 +73,8 @@ action :configure do
       :log_dir => new_resource.log_dir,
       :catalina_pid => new_resource.catalina_pid
     })
-    owner "#{new_resource.user}"
-    group "#{new_resource.group}"
+    owner "root"
+    group "root"
     mode '0755'
   end
 
@@ -78,7 +113,7 @@ action :configure do
 #    notifies :restart, "service[#{instance}]"
   end   
 
-  template "#{node["tomee"]["config_dir"]}/tomcat-users.xml" do
+  template "#{new_resource.config_dir}/tomcat-users.xml" do
     source 'tomee-users.xml.erb'
     mode '0644'
     variables(
@@ -104,15 +139,15 @@ action :configure do
         :tomcat_auth => new_resource.tomcat_auth,
         :config_dir => new_resource.config_dir,
       })
-    owner 'root'
-    group 'root'
+    owner "#{new_resource.user}"
+    group "#{new_resource.group}"
     mode '0644'
   end
   
   template "#{new_resource.config_dir}/logging.properties" do
     source 'logging.properties.erb'
-    owner 'root'
-    group 'root'
+    owner "#{new_resource.user}"
+    group "#{new_resource.group}"
     mode '0644'
   end
     

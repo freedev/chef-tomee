@@ -12,12 +12,6 @@ require 'uri'
 tomee_user = node['tomee']['user']
 tomee_group = node['tomee']['group']
 tomee_user_home = "/home/#{tomee_user}"
-tomee_url = node['tomee']['tomee_url']
-tomee_uri = URI.parse(tomee_url)
-tomee_filename = File.basename(tomee_uri.path)
-tomee_basename = File.basename(tomee_uri.path, '.tar.gz')
-tmpdir = '/tmp'
-tomee_homedir = node['tomee']['home']
 
 group tomee_group
 
@@ -30,37 +24,19 @@ user tomee_user do
   action :create
 end
 
-remote_file "#{tmpdir}/#{tomee_filename}" do
-  source tomee_url
-end
 
-directory tomee_homedir do
-  owner tomee_user
-  group tomee_group
-  action :create
-end
-
-execute "tar-install-#{tomee_filename}" do
-  user tomee_user
-  group tomee_group
-  command "tar xzf #{tmpdir}/#{tomee_filename} --strip 1"
-  action :run
-  cwd tomee_homedir
-  returns 0
-end
-
-if node['tomcat']['run_base_instance']
+if node['tomee']['run_base_instance']
   tomee_instance "base" do
-    port node['tomcat']['port']
-    proxy_port node['tomcat']['proxy_port']
-    ssl_port node['tomcat']['ssl_port']
-    ssl_proxy_port node['tomcat']['ssl_proxy_port']
-    ajp_port node['tomcat']['ajp_port']
-    shutdown_port node['tomcat']['shutdown_port']
+    port node['tomee']['port']
+    proxy_port node['tomee']['proxy_port']
+    ssl_port node['tomee']['ssl_port']
+    ssl_proxy_port node['tomee']['ssl_proxy_port']
+    ajp_port node['tomee']['ajp_port']
+    shutdown_port node['tomee']['shutdown_port']
   end
 end
 
-node['tomcat']['instances'].each do |name, attrs|
+node['tomee']['instances'].each do |name, attrs|
   tomee_instance "#{name}" do
     port attrs['port']
     proxy_port attrs['proxy_port']
@@ -97,14 +73,5 @@ node['tomcat']['instances'].each do |name, attrs|
     lib_dir attrs['lib_dir']
     endorsed_dir attrs['endorsed_dir']
   end
-end
-
-tomee_instance "base" do
-  port node['tomee']['port']
-  proxy_port node['tomee']['proxy_port']
-  ssl_port node['tomee']['ssl_port']
-  ssl_proxy_port node['tomee']['ssl_proxy_port']
-  ajp_port node['tomee']['ajp_port']
-  shutdown_port node['tomee']['shutdown_port']
 end
 

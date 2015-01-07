@@ -86,4 +86,6 @@ attribute :endorsed_dir,
   :kind_of => String
 attribute :catalina_pid,
   :kind_of => String
+attribute :tomee_url,
+  :kind_of => String
   
