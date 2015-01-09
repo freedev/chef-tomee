@@ -9,6 +9,9 @@
 
 require 'uri'
 
+# required for the secure_password method from the openssl cookbook
+::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
+
 tomee_user = node['tomee']['user']
 tomee_group = node['tomee']['group']
 tomee_user_home = "/home/#{tomee_user}"
@@ -24,6 +27,8 @@ user tomee_user do
   action :create
 end
 
+node.set_unless['tomee']['keystore_password'] = secure_password
+# node.set_unless['tomee']['truststore_password'] = secure_password
 
 tomee_instance "base" do
   port node['tomee']['port']

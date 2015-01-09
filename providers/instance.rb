@@ -21,9 +21,7 @@ action :configure do
   if new_resource.name == 'base'
     instance = base_instance
   else
-    instance = new_resource.name
-    instance.gsub!(/^.*(\\|\/)/, '')
-    instance.gsub!(/[^0-9A-Za-z.\-]/, '_')
+    instance = new_resource.name.gsub(/^.*(\\|\/)/, '').gsub(/[^0-9A-Za-z.\-]/, '_')
   end  
 
   if instance != base_instance
@@ -65,6 +63,71 @@ action :configure do
     recursive true
   end
 
+  unless new_resource.truststore_file.nil?
+    jo = new_resource.java_options.to_s
+    jo << " -Djavax.net.ssl.trustStore=$JAVA_HOME#{new_resource.truststore_file}"
+    jo << " -Djavax.net.ssl.trustStorePassword=#{new_resource.truststore_password}"
+    new_resource.instance_variable_set("@java_options", jo)
+  end
+
+  if new_resource.ssl_cert_file.nil?
+    execute 'Create Tomee SSL certificate' do
+      group new_resource.group
+      command <<-EOH
+        #{node['tomee']['keytool']} \
+         -genkey \
+         -keystore "#{new_resource.config_dir}/#{new_resource.keystore_file}" \
+         -storepass "#{node['tomee']['keystore_password']}" \
+         -keypass "#{node['tomee']['keystore_password']}" \
+         -dname "#{node['tomee']['certificate_dn']}"
+      EOH
+      umask 0007
+      creates "#{new_resource.config_dir}/#{new_resource.keystore_file}"
+      action :run
+      notifies :restart, "service[#{instance}]"
+    end
+  else
+    script "create_keystore-#{instance}" do
+      interpreter 'bash'
+      action :nothing
+      cwd new_resource.config_dir
+      code <<-EOH
+        cat #{new_resource.ssl_chain_files.join(' ')} > cacerts.pem
+        openssl pkcs12 -export \
+         -inkey #{new_resource.ssl_key_file} \
+         -in #{new_resource.ssl_cert_file} \
+         -chain \
+         -CAfile cacerts.pem \
+         -password pass:#{node['tomcat']['keystore_password']} \
+         -out #{new_resource.keystore_file}
+      EOH
+      notifies :restart, "service[tomcat]"
+    end
+  
+    cookbook_file "#{new_resource.config_dir}/#{new_resource.ssl_cert_file}" do
+      mode '0644'
+      notifies :run, "script[create_keystore-#{instance}]"
+    end
+  
+    cookbook_file "#{new_resource.config_dir}/#{new_resource.ssl_key_file}" do
+      mode '0644'
+      notifies :run, "script[create_keystore-#{instance}]"
+    end
+  
+    new_resource.ssl_chain_files.each do |cert|
+      cookbook_file "#{new_resource.config_dir}/#{cert}" do
+        mode '0644'
+        notifies :run, "script[create_keystore-#{instance}]"
+      end
+    end
+  end
+  
+#  unless new_resource.truststore_file.nil?
+#    cookbook_file new_resource.truststore_file do
+#      mode '0644'
+#    end
+#  end
+  
   template "/etc/init.d/#{instance}" do
     source 'service_tomee.erb'
     variables ({

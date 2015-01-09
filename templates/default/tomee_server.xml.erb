@@ -89,11 +89,19 @@
          style configuration. When using the APR/native implementation, the
          OpenSSL style configuration is required as described in the APR/native
          documentation -->
-    <!--
+
+<% if @ssl_port -%>
     <Connector port="<%= @ssl_port %>" protocol="org.apache.coyote.http11.Http11Protocol"
-               maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
+              keystoreFile="<%= @config_dir %>/<%= @keystore_file %>"
+              keystorePass="<%= node['tomee']['keystore_password'] %>"
+              keystoreType="<%= @keystore_type %>"
+              truststorePass="<%= node['tomee']['truststore_password'] %>"
+               maxThreads="<%= @ssl_max_threads %>" SSLEnabled="true" scheme="https" secure="true"
+              <% if @ssl_proxy_port -%>
+                proxyPort="<%= @ssl_proxy_port %>"
+              <% end -%>
                clientAuth="false" sslProtocol="TLS" />
-    -->
+<% end -%>
 
     <!-- Define an AJP 1.3 Connector on port <%= @ajp_port %> -->
     <Connector port="<%= @ajp_port %>" protocol="AJP/1.3" redirectPort="<%= @ssl_port %>" />

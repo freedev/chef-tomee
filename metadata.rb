@@ -8,6 +8,7 @@ version          '0.4.0'
 
 # depends 'apt', '~> 2.6.0'
 depends 'java', '~> 1.21'
+depends "openssl", ">= 0.0.0"
 # depends 'maven', '~> 1.2.0'
 # depends 'tomcat', '~> 0.17.0'
 # depends 'net-scp', '~> 1.2.1'

@@ -62,6 +62,8 @@ attribute :truststore_file,
 attribute :truststore_type,
   :kind_of => String,
   :equal_to => ['jks', 'pkcs11', 'pkcs12']
+attribute :truststore_password,
+  :kind_of => String
 attribute :certificate_dn,
   :kind_of => String
 attribute :loglevel,
