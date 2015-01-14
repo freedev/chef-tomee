@@ -21,9 +21,7 @@ action :configure do
   if new_resource.name == 'base'
     instance = base_instance
   else
-    instance = new_resource.name
-    instance.gsub!(/^.*(\\|\/)/, '')
-    instance.gsub!(/[^0-9A-Za-z.\-]/, '_')
+    instance = new_resource.name.gsub(/^.*(\\|\/)/, '').gsub(/[^0-9A-Za-z.\-]/, '_')
   end  
 
   if instance != base_instance
