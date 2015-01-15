@@ -9,8 +9,7 @@ action :configure do
   # that runs
 #  [:catalina_options, :java_options, :use_security_manager, :authbind,
 #   :max_threads, :ssl_max_threads, :ssl_cert_file, :ssl_key_file,
-#   :ssl_chain_files, :keystore_file, :keystore_type, :truststore_file,
-#   :truststore_type, :certificate_dn, :loglevel, :tomcat_auth, :user,
+#   :ssl_chain_files, :keystore_file, :keystore_type, :certificate_dn, :loglevel, :tomcat_auth, :user,
 #   :group, :tmp_dir, :lib_dir, :endorsed_dir, :catalina_pid, :tomee_url].each do |attr|
   node['tomee'].keys.each do |attr|
     if not new_resource.instance_variable_get("@#{attr}")
@@ -61,13 +60,6 @@ action :configure do
   directory new_resource.endorsed_dir do
     mode '0755'
     recursive true
-  end
-
-  unless new_resource.truststore_file.nil?
-    jo = new_resource.java_options.to_s
-    jo << " -Djavax.net.ssl.trustStore=$JAVA_HOME#{new_resource.truststore_file}"
-    jo << " -Djavax.net.ssl.trustStorePassword=#{new_resource.truststore_password}"
-    new_resource.instance_variable_set("@java_options", jo)
   end
 
   if new_resource.ssl_cert_file.nil?
@@ -121,12 +113,6 @@ action :configure do
       end
     end
   end
-  
-#  unless new_resource.truststore_file.nil?
-#    cookbook_file new_resource.truststore_file do
-#      mode '0644'
-#    end
-#  end
   
   template "/etc/init.d/#{instance}" do
     source 'service_tomee.erb'
