@@ -21,3 +21,4 @@ bin/*
 *.deb
 *.rpm
 berks-cookbooks/*
+ssl/*
