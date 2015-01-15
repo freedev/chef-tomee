@@ -95,7 +95,6 @@
               keystoreFile="<%= @config_dir %>/<%= @keystore_file %>"
               keystorePass="<%= node['tomee']['keystore_password'] %>"
               keystoreType="<%= @keystore_type %>"
-              truststorePass="<%= node['tomee']['truststore_password'] %>"
                maxThreads="<%= @ssl_max_threads %>" SSLEnabled="true" scheme="https" secure="true"
               <% if @ssl_proxy_port -%>
                 proxyPort="<%= @ssl_proxy_port %>"
