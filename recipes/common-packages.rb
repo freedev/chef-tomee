@@ -32,13 +32,13 @@ when 'debian', 'ubuntu'
 end
 
 # java cookbook needs curl to download jdk from oracle
-package "curl"
+# package "curl"
 
 # I like git
-package "git"
+# package "git"
 
 # and vim too
-package "vim"
+# package "vim"
 
 #
 #package "nfs-kernel-server"
