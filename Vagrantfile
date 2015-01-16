@@ -39,6 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   if provider == :virtualbox
     puts "* Using virtualbox *"
+#    config.vm.box = 'freedev/centos-6.2-x86_64'
     config.vm.box = 'chef/ubuntu-14.04'
 #    config.vm.box = 'opscode-centos-6.5'
 #    config.vm.synced_folder ".", "/vagrant", type: "nfs"
@@ -140,6 +141,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         }
       }
 #      ,:tomee => {
+#        :run_base_instance => false,
 #        :instances => {
 #          "tomee1" => {
 #            :port => 8080,
@@ -161,7 +163,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       'recipe[tomee::common-packages]',
       'recipe[java::default]',
       'recipe[tomee::tomee]'
-#      'recipe[maven::default]'
     ]
   end
 end
