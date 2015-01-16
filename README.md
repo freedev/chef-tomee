@@ -14,13 +14,20 @@ Used with: Centos (6.2, 6.5) and Ubuntu (14.04)
 
 ### Dependencies
 - java
+- openssl
 
 ###Prerequisites
-This cookbook cames with a dependency to java cookbook.
-At end of document there is `run_list` 
-Please make sure that Java has been configured on the machine
-prior to the application any resources or recipes shipped in this
-cookbook.
+This cookbook cames with a dependency to `java` and `openssl` cookbooks.<br>
+
+`common-packages` recipe has been added to fix the installation of 
+`java` with debian/ubuntu platforms.<br>
+
+`java` cookbook has a dependency with `curl` package.
+When `java` cookbook is executed it doesn't check for apt-get repository update, 
+`curl` package installation fails because of apt-get repository not is updated yet.<br>
+
+`common-packages` has been executed as first just to update apt-get repository before.
+
 
 ## Attributes
 
