@@ -2,26 +2,30 @@
   "java" : {
     "install_flavor" : "oracle",
     "jdk_version" : 8,
+// Change this if you want download jdk from your internal host
 //    "url" : "http://my.internal.host/jdk-8u25-linux-x64.tar.gz",
     "oracle" : {
       "accept_oracle_download_terms" : true
     }
   },
+
+// This is for multiple instances
 /*
   "tomee" : {
+    "run_base_instance" : false,
     "instances" : {
-      "tomcat" : {
-        "port" : 8080,
-        "shutdown_port" : 8005
+      "tomee-instance" : {
+        "port" : 9080,
+        "shutdown_port" : 8005,
+        "vhost_name" : "www.sitonline.com",
+        "aliases" : [ "sitonline.com" ]
       }
     }
   },
 */
   "run_list": [ 
     "recipe[tomee::common-packages]", 
-    "recipe[java]", 
-//    "recipe[tomcat]"
-//    "recipe[tomcat::users]" 
+      "recipe[java]",
       "recipe[tomee::tomee]"
   ]
 }
