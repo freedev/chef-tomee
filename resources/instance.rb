@@ -20,6 +20,10 @@ attribute :ajp_port,
 attribute :shutdown_port,
   :kind_of => Fixnum,
   :required => true
+attribute :vhost_name,
+  :kind_of => String
+attribute :vhost_aliases,
+  :kind_of => Array
 
 # The rest will inherit from node attributes
 attribute :config_dir,
@@ -54,6 +58,8 @@ attribute :ssl_chain_files,
   :kind_of => Array
 attribute :keystore_file,
   :kind_of => String
+attribute :keystore_password,
+:kind_of => String
 attribute :keystore_type,
   :kind_of => String,
   :equal_to => ['jks', 'pkcs11', 'pkcs12']
@@ -68,6 +74,8 @@ attribute :certificate_dn,
   :kind_of => String
 attribute :loglevel,
   :kind_of => String
+attribute :log_handlers,
+  :kind_of => Hash
 attribute :tomcat_auth,
   :kind_of => String,
   :equal_to => ['true', 'false']
@@ -90,4 +98,7 @@ attribute :catalina_pid,
   :kind_of => String
 attribute :tomee_url,
   :kind_of => String
-  
+attribute :node_attributes,
+  :kind_of => Hash
+
+    

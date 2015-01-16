@@ -7,13 +7,15 @@
 # All rights reserved - Do Not Redistribute
 #
 
-require 'uri'
+# require 'pp'
 
 # required for the secure_password method from the openssl cookbook
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 
-tomee_user = node['tomee']['user']
-tomee_group = node['tomee']['group']
+current_node = node['tomee']
+
+tomee_user = current_node['user']
+tomee_group = current_node['group']
 tomee_user_home = "/home/#{tomee_user}"
 
 group tomee_group
@@ -30,52 +32,32 @@ end
 node.set_unless['tomee']['keystore_password'] = secure_password
 # node.set_unless['tomee']['truststore_password'] = secure_password
 
-tomee_instance "base" do
-  port node['tomee']['port']
-  proxy_port node['tomee']['proxy_port']
-  ssl_port node['tomee']['ssl_port']
-  ssl_proxy_port node['tomee']['ssl_proxy_port']
-  ajp_port node['tomee']['ajp_port']
-  shutdown_port node['tomee']['shutdown_port']
-  only_if { node['tomee']['run_base_instance'] == true }
+current_node['instances'].each do |name, attrs|
+
+  call_attrs = {}
+  current_node.keys.each do |k_name|
+    if k_name != "instances" and not attrs[k_name]
+      call_attrs[k_name] = current_node[k_name]
+    else
+      call_attrs[k_name] = attrs[k_name]
+    end  
+  end 
+
+  call_attrs['name'] = name
+
+  call_attrs = materialize call_attrs
+  call_attrs = materialize call_attrs
+
+  tomee_instance name do
+    node_attributes call_attrs
+  end
 end
 
-node['tomee']['instances'].each do |name, attrs|
-  tomee_instance name do
-    port attrs['port']
-    proxy_port attrs['proxy_port']
-    ssl_port attrs['ssl_port']
-    ssl_proxy_port attrs['ssl_proxy_port']
-    ajp_port attrs['ajp_port']
-    shutdown_port attrs['shutdown_port']
-    config_dir attrs['config_dir']
-    log_dir attrs['log_dir']
-    work_dir attrs['work_dir']
-    context_dir attrs['context_dir']
-    webapp_dir attrs['webapp_dir']
-    catalina_options attrs['catalina_options']
-    java_options attrs['java_options']
-    use_security_manager attrs['use_security_manager']
-    authbind attrs['authbind']
-    max_threads attrs['max_threads']
-    ssl_max_threads attrs['ssl_max_threads']
-    ssl_cert_file attrs['ssl_cert_file']
-    ssl_key_file attrs['ssl_key_file']
-    ssl_chain_files attrs['ssl_chain_files']
-    keystore_file attrs['keystore_file']
-    keystore_type attrs['keystore_type']
-    truststore_file attrs['truststore_file']
-    truststore_type attrs['truststore_type']
-    certificate_dn attrs['certificate_dn']
-    loglevel attrs['loglevel']
-    tomcat_auth attrs['tomcat_auth']
-    user attrs['user']
-    group attrs['group']
-    home attrs['home']
-    base attrs['base']
-    tmp_dir attrs['tmp_dir']
-    lib_dir attrs['lib_dir']
-    endorsed_dir attrs['endorsed_dir']
-  end
+current_node = materialize current_node
+current_node = materialize current_node
+
+tomee_instance "base" do
+  node_attributes current_node
+  only_if { current_node['run_base_instance'] == true }
 end
 

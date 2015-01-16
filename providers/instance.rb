@@ -1,9 +1,11 @@
 require 'tmpdir'
+require 'uri'
+require 'pp'
+
+include Materialization
 
 action :configure do
-
-  base_instance = node['tomee']['name']
-
+  
   # Set defaults for resource attributes from node attributes. We can't do
   # this in the resource declaration because node isn't populated yet when
   # that runs
@@ -11,106 +13,118 @@ action :configure do
 #   :max_threads, :ssl_max_threads, :ssl_cert_file, :ssl_key_file,
 #   :ssl_chain_files, :keystore_file, :keystore_type, :certificate_dn, :loglevel, :tomcat_auth, :user,
 #   :group, :tmp_dir, :lib_dir, :endorsed_dir, :catalina_pid, :tomee_url].each do |attr|
-  node['tomee'].keys.each do |attr|
-    if not new_resource.instance_variable_get("@#{attr}")
-      new_resource.instance_variable_set("@#{attr}", node['tomee'][attr])
-    end
-  end 
 
+  pp "--- entering instance provisioning ---"
+  pp new_resource
+  
+  instance_attributes = new_resource.node_attributes
+  
   if new_resource.name == 'base'
-    instance = base_instance
+    instance = new_resource
   else
+    # Sanitize the name
     instance = new_resource.name.gsub(/^.*(\\|\/)/, '').gsub(/[^0-9A-Za-z.\-]/, '_')
   end  
 
-  if instance != base_instance
-    [:base, :home, :config_dir, :log_dir, :tmp_dir, :work_dir, :context_dir,
-     :webapp_dir, :lib_dir, :endorsed_dir, :catalina_pid].each do |attr|
-      if node["tomee"][attr]
-        new = node["tomee"][attr].sub(/\/tomee(\/|$)/, "/#{instance}\\1")
-        new_resource.instance_variable_set("@#{attr}", new)
-      end
-    end
-  end
+  pp instance_attributes['tomee_url']
 
-  tomee_uri = URI.parse(new_resource.tomee_url)
+  tomee_uri = URI.parse(instance_attributes['tomee_url'])
   tomee_filename = ::File.basename(tomee_uri.path)
   tomee_basename = ::File.basename(tomee_uri.path, '.tar.gz')
   tmpdir = Dir.tmpdir
 
   remote_file "#{tmpdir}/#{tomee_filename}" do
-    source new_resource.tomee_url
+    source instance_attributes['tomee_url']
   end
 
-  directory new_resource.home do
-    owner new_resource.user
-    group new_resource.group
+  directory instance_attributes['home'] do
+    owner instance_attributes['user']
+    group instance_attributes['group']
     action :create
   end
 
   execute "tar-install-#{tomee_filename}" do
-    user new_resource.user
-    group new_resource.group
+    user instance_attributes['user']
+    group instance_attributes['group']
     command "tar xzf #{tmpdir}/#{tomee_filename} --strip 1"
     action :run
-    cwd new_resource.home
+    cwd instance_attributes['home']
     returns 0
   end
 
-  directory new_resource.endorsed_dir do
+  directory instance_attributes['endorsed_dir'] do
     mode '0755'
     recursive true
   end
 
-  if new_resource.ssl_cert_file.nil?
+  if instance_attributes['ssl_cert_file'].nil?
+
+    create_tomee_ssl_certificat_command = %{
+      #{instance_attributes['keytool']} \
+       -genkey -keyalg RSA -keysize 2048 -trustcacerts \
+       -alias #{instance} \
+       -keystore \"#{instance_attributes['config_dir']}/#{instance_attributes['keystore_file']}\" \
+       -storepass #{instance_attributes['keystore_password']} \
+       -dname \"#{instance_attributes['certificate_dn']}"
+       }
+    
     execute 'Create Tomee SSL certificate' do
-      group new_resource.group
-      command <<-EOH
-        #{node['tomee']['keytool']} \
-         -genkey \
-         -keystore "#{new_resource.config_dir}/#{new_resource.keystore_file}" \
-         -storepass "#{node['tomee']['keystore_password']}" \
-         -keypass "#{node['tomee']['keystore_password']}" \
-         -dname "#{node['tomee']['certificate_dn']}"
-      EOH
+      group instance_attributes['group']
+      command create_tomee_ssl_certificat_command
       umask 0007
-      creates "#{new_resource.config_dir}/#{new_resource.keystore_file}"
+      creates "#{instance_attributes['config_dir']}/#{instance_attributes['keystore_file']}"
       action :run
       notifies :restart, "service[#{instance}]"
     end
   else
-    script "create_keystore-#{instance}" do
-      interpreter 'bash'
-      action :nothing
-      cwd new_resource.config_dir
-      code <<-EOH
-        cat #{new_resource.ssl_chain_files.join(' ')} > cacerts.pem
-        openssl pkcs12 -export \
-         -inkey #{new_resource.ssl_key_file} \
-         -in #{new_resource.ssl_cert_file} \
-         -chain \
-         -CAfile cacerts.pem \
-         -password pass:#{node['tomcat']['keystore_password']} \
-         -out #{new_resource.keystore_file}
-      EOH
-      notifies :restart, "service[tomcat]"
-    end
-  
-    cookbook_file "#{new_resource.config_dir}/#{new_resource.ssl_cert_file}" do
-      mode '0644'
-      notifies :run, "script[create_keystore-#{instance}]"
-    end
-  
-    cookbook_file "#{new_resource.config_dir}/#{new_resource.ssl_key_file}" do
-      mode '0644'
-      notifies :run, "script[create_keystore-#{instance}]"
-    end
-  
-    new_resource.ssl_chain_files.each do |cert|
-      cookbook_file "#{new_resource.config_dir}/#{cert}" do
+    
+#    ssl_chain_files = ""
+#    instance_attributes['ssl_chain_files'].each do |item|
+#      ssl_chain_files = ssl_chain_files + " #{instance_attributes['config_dir']}/#{item} "
+#    end
+#    
+#    create_keystore_certificate = %{
+#      cat #{ssl_chain_files} > cacerts.pem
+#      openssl pkcs12 -export \
+#       -inkey #{instance_attributes['ssl_key_file']} \
+#       -in #{instance_attributes['ssl_cert_file']} \
+#       -chain \
+#       -CAfile cacerts.pem \
+#       -password pass:#{instance_attributes['keystore_password']} \
+#       -out #{instance_attributes['config_dir']}/#{instance_attributes['keystore_file']}
+#    }
+
+    create_tomee_ssl_import_cert_command = %{
+      #{instance_attributes['keytool']} \
+       -import -trustcacerts \
+       -storepass #{instance_attributes['keystore_password']} \
+       -keystore \"#{instance_attributes['config_dir']}/#{instance_attributes['keystore_file']}\" \
+       }
+    
+    instance_attributes['ssl_chain_files'].each do |cert|
+      cookbook_file cert do
+        path "#{instance_attributes['config_dir']}/#{cert}"
         mode '0644'
-        notifies :run, "script[create_keystore-#{instance}]"
       end
+
+      execute "Create Tomee SSL import certificate #{cert}" do
+        group instance_attributes['group']
+        command create_tomee_ssl_import_cert_command+ %{ -alias #{cert} -file \"#{instance_attributes['config_dir']}/#{cert}\"  }
+        umask 0007
+        action :run
+      end
+    end
+
+    cookbook_file instance_attributes['ssl_cert_file'] do
+      path "#{instance_attributes['config_dir']}/#{instance_attributes['ssl_cert_file']}"
+      mode '0644'
+    end
+
+    execute "Create Tomee SSL import certificate #{instance_attributes['ssl_cert_file']}" do
+      group instance_attributes['group']
+      command create_tomee_ssl_import_cert_command+ %{ -alias #{instance_attributes['vhost_name']} -file \"#{instance_attributes['config_dir']}/#{instance_attributes['ssl_cert_file']}\"  }
+      umask 0007
+      action :run
     end
   end
   
@@ -118,9 +132,9 @@ action :configure do
     source 'service_tomee.erb'
     variables ({
       :instance => instance,
-      :base => new_resource.base,
-      :log_dir => new_resource.log_dir,
-      :catalina_pid => new_resource.catalina_pid
+      :base => instance_attributes['base'],
+      :log_dir => instance_attributes['log_dir'],
+      :catalina_pid => instance_attributes['catalina_pid']
     })
     owner "root"
     group "root"
@@ -141,28 +155,28 @@ action :configure do
     end
   end
        
-  template "#{new_resource.home}/bin/setenv.sh" do
+  template "#{instance_attributes['home']}/bin/setenv.sh" do
     source 'setenv_tomee.sh.erb'
     variables ({
-      :user => new_resource.user,
-      :group => new_resource.group,
-      :home => new_resource.home,
-      :base => new_resource.base,
-      :java_options => new_resource.java_options,
-      :use_security_manager => new_resource.use_security_manager,
-      :tmp_dir => new_resource.tmp_dir,
-      :authbind => new_resource.authbind,
-      :catalina_options => new_resource.catalina_options,
-      :endorsed_dir => new_resource.endorsed_dir,
-      :catalina_pid => new_resource.catalina_pid
+      :user => instance_attributes['user'],
+      :group => instance_attributes['group'],
+      :home => instance_attributes['home'],
+      :base => instance_attributes['base'],
+      :java_options => instance_attributes['java_options'],
+      :use_security_manager => instance_attributes['use_security_manager'],
+      :tmp_dir => instance_attributes['tmp_dir'],
+      :authbind => instance_attributes['authbind'],
+      :catalina_options => instance_attributes['catalina_options'],
+      :endorsed_dir => instance_attributes['endorsed_dir'],
+      :catalina_pid => instance_attributes['catalina_pid']
     })
-    owner new_resource.user
-    group new_resource.group
+    owner instance_attributes['user']
+    group instance_attributes['group']
     mode '0755'
 #    notifies :restart, "service[#{instance}]"
   end   
 
-  template "#{new_resource.config_dir}/tomcat-users.xml" do
+  template "#{instance_attributes['config_dir']}/tomcat-users.xml" do
     source 'tomee-users.xml.erb'
     mode '0644'
     variables(
@@ -172,31 +186,42 @@ action :configure do
 #    notifies :restart, "service[#{instance}]"
   end
 
-  template "#{new_resource.config_dir}/server.xml" do
+  template "#{instance_attributes['config_dir']}/server.xml" do
     source 'tomee_server.xml.erb'
       variables ({
-        :port => new_resource.port,
-        :proxy_port => new_resource.proxy_port,
-        :ssl_port => new_resource.ssl_port,
-        :ssl_proxy_port => new_resource.ssl_proxy_port,
-        :ajp_port => new_resource.ajp_port,
-        :shutdown_port => new_resource.shutdown_port,
-        :max_threads => new_resource.max_threads,
-        :ssl_max_threads => new_resource.ssl_max_threads,
-        :keystore_file => new_resource.keystore_file,
-        :keystore_type => new_resource.keystore_type,
-        :tomcat_auth => new_resource.tomcat_auth,
-        :config_dir => new_resource.config_dir,
+        :port => instance_attributes['port'],
+        :proxy_port => instance_attributes['proxy_port'],
+        :ssl_port => instance_attributes['ssl_port'],
+        :ssl_proxy_port => instance_attributes['ssl_proxy_port'],
+        :ajp_port => instance_attributes['ajp_port'],
+        :shutdown_port => instance_attributes['shutdown_port'],
+        :max_threads => instance_attributes['max_threads'],
+        :vhost_name => instance_attributes['vhost_name'],
+        :vhost_aliases => instance_attributes['vhost_aliases'],
+        :max_threads => instance_attributes['max_threads'],
+        :ssl_max_threads => instance_attributes['ssl_max_threads'],
+        :ssl_cert_file => instance_attributes['ssl_cert_file'],
+        :ssl_key_file => instance_attributes['ssl_key_file'],
+        :keystore_file => instance_attributes['keystore_file'],
+        :keystore_password => instance_attributes['keystore_password'],
+        :keystore_type => instance_attributes['keystore_type'],
+        :tomcat_auth => instance_attributes['tomcat_auth'],
+        :config_dir => instance_attributes['config_dir'],
       })
-    owner new_resource.user
-    group new_resource.group
+    owner instance_attributes['user']
+    group instance_attributes['group']
     mode '0644'
   end
   
-  template "#{new_resource.config_dir}/logging.properties" do
+  template "#{instance_attributes['config_dir']}/logging.properties" do
     source 'logging.properties.erb'
-    owner new_resource.user
-    group new_resource.group
+    variables ({
+      :vhost_name => instance_attributes['vhost_name'],
+      :loglevel => instance_attributes['loglevel'],
+      :log_handlers => instance_attributes['log_handlers']
+    })
+    owner instance_attributes['user']
+    group instance_attributes['group']
     mode '0644'
   end
     
