@@ -14,19 +14,9 @@ action :configure do
 #   :ssl_chain_files, :keystore_file, :keystore_type, :certificate_dn, :loglevel, :tomcat_auth, :user,
 #   :group, :tmp_dir, :lib_dir, :endorsed_dir, :catalina_pid, :tomee_url].each do |attr|
 
-  pp "--- entering instance provisioning ---"
-  pp new_resource
-  
   instance_attributes = new_resource.node_attributes
   
-  if new_resource.name == 'base'
-    instance = new_resource
-  else
-    # Sanitize the name
-    instance = new_resource.name.gsub(/^.*(\\|\/)/, '').gsub(/[^0-9A-Za-z.\-]/, '_')
-  end  
-
-  pp instance_attributes['tomee_url']
+  instance = new_resource.name.gsub(/^.*(\\|\/)/, '').gsub(/[^0-9A-Za-z.\-]/, '_')
 
   tomee_uri = URI.parse(instance_attributes['tomee_url'])
   tomee_filename = ::File.basename(tomee_uri.path)

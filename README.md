@@ -32,9 +32,9 @@ cookbook.
     <th>Default</th>
   </tr>
   <tr>
-    <td><tt>['tomee']['run_base_instance']</tt></td>
+    <td><tt>['tomee']['deploy_multiple_instances']</tt></td>
     <td>Boolean</td>
-    <td>whether to include bacon</td>
+    <td>If you want deploy multiple instances within the same node, you must also fill the 'instances' attribute with the list of instances, ports, etc.</td>
     <td><tt>true</tt></td>
   </tr>
   <tr>

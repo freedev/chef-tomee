@@ -1,6 +1,6 @@
 
-# set run_base_instance = false if you want create multiple instances 
-default["tomee"]["run_base_instance"] = true
+# set deploy_multiple_instances = true if you want create multiple instances 
+default["tomee"]["deploy_multiple_instances"] = false
 default["tomee"]["name"]="tomee"
 default["tomee"]["user"]="tmuser"
 default["tomee"]["group"]="tomee"

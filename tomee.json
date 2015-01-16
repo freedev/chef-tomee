@@ -12,7 +12,7 @@
 // This is for multiple instances
 /*
   "tomee" : {
-    "run_base_instance" : false,
+    "deploy_multiple_instances" : true,
     "instances" : {
       "tomee-instance" : {
         "port" : 9080,
@@ -25,7 +25,7 @@
 */
   "run_list": [ 
     "recipe[tomee::common-packages]", 
-      "recipe[java]",
-      "recipe[tomee::tomee]"
+    "recipe[java]",
+    "recipe[tomee::tomee]"
   ]
 }

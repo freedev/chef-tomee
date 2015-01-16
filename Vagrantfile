@@ -141,7 +141,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         }
       }
 #      ,:tomee => {
-#        :run_base_instance => false,
+#        :deploy_multiple_instances => true,
 #        :instances => {
 #          "tomee1" => {
 #            :port => 8080,

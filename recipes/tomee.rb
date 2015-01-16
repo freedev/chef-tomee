@@ -32,32 +32,33 @@ end
 node.set_unless['tomee']['keystore_password'] = secure_password
 # node.set_unless['tomee']['truststore_password'] = secure_password
 
-current_node['instances'].each do |name, attrs|
-
-  call_attrs = {}
-  current_node.keys.each do |k_name|
-    if k_name != "instances" and not attrs[k_name]
-      call_attrs[k_name] = current_node[k_name]
-    else
-      call_attrs[k_name] = attrs[k_name]
-    end  
-  end 
-
-  call_attrs['name'] = name
-
-  call_attrs = materialize call_attrs
-  call_attrs = materialize call_attrs
-
-  tomee_instance name do
-    node_attributes call_attrs
+if current_node['deploy_multiple_instances'] == true
+  current_node['instances'].each do |name, attrs|
+  
+    call_attrs = {}
+    current_node.keys.each do |k_name|
+      if k_name != "instances" and not attrs[k_name]
+        call_attrs[k_name] = current_node[k_name]
+      else
+        call_attrs[k_name] = attrs[k_name]
+      end  
+    end 
+  
+    call_attrs['name'] = name
+  
+    call_attrs = materialize call_attrs
+    call_attrs = materialize call_attrs
+  
+    tomee_instance name do
+      node_attributes call_attrs
+    end
   end
 end
 
 current_node = materialize current_node
 current_node = materialize current_node
 
-tomee_instance "base" do
+tomee_instance "tomee" do
   node_attributes current_node
-  only_if { current_node['run_base_instance'] == true }
+  only_if { current_node['deploy_multiple_instances'] == false }
 end
-
