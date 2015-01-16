@@ -1,3 +1,9 @@
+# 0.6.0
+
+Added vhosts and aliases configuration
+Added ssl support
+Bug fix
+
 # 0.5.0
 
 Changed default box in Vagrantfile 

@@ -97,6 +97,18 @@ cookbook.
     <td>Shutdown port</td>
     <td><tt>8005</tt></td>
   </tr>
+  <tr>
+    <td><tt>['tomee']['vhost_name']</tt></td>
+    <td>String</td>
+    <td>Host</td>
+    <td><tt>localhost</tt></td>
+  </tr>
+  <tr>
+    <td><tt>['tomee']['aliases']</tt></td>
+    <td>Array</td>
+    <td>List of domain aliases mapped</td>
+    <td><tt>["www.example.com", "example.com"]</tt></td>
+  </tr>
 </table>
 
 ## Usage
