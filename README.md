@@ -42,7 +42,7 @@ When `java` cookbook is executed it doesn't check for apt-get repository update,
     <td><tt>['tomee']['deploy_multiple_instances']</tt></td>
     <td>Boolean</td>
     <td>If you want deploy multiple instances within the same node, you must also fill the 'instances' attribute with the list of instances, ports, etc.</td>
-    <td><tt>true</tt></td>
+    <td><tt>false</tt></td>
   </tr>
   <tr>
     <td><tt>['tomee']['name']</tt></td>
