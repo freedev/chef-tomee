@@ -27,16 +27,18 @@ For redhat execute:
 
 Then execute the following commands:
 
+- mkdir ~/install-tomee
 - mkdir -p /var/chef/cookbooks
-- mkdir -p /var/chef/data_bags
+- mkdir -p /var/chef/data_bags/tomee_users
 - cd /var/chef/cookbooks/
 - git init
 - touch README.md
 - git add README.md
 - git commit -a -m "updates"
-- cd -
+- cd ~/install-tomee
 - knife cookbook site install tomee
 - cp /var/chef/cookbooks/tomee/templates/default/tomee.json .
+- cp /var/chef/cookbooks/tomee/templates/default/admin.json /var/chef/data_bags/tomee_users
 - chef-solo -j tomee.json
 
 ###Prerequisites

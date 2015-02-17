@@ -1,0 +1,11 @@
+{
+  "id": "admin",
+  "password": "supersecret",
+  "roles": [
+    "manager",
+    "admin",
+    "manager-gui",
+    "admin-gui"
+  ]
+}
+
