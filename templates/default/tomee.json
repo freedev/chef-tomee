@@ -10,9 +10,10 @@
   },
 
 // This is for multiple instances
-/*
   "tomee" : {
-    "deploy_multiple_instances" : true,
+    "deploy_multiple_instances" : false,
+    "tomee_url" : "http://apache.fastbull.org/tomee/tomee-1.7.1/apache-tomee-1.7.1-plume.tar.gz"
+/*
     "instances" : {
       "tomee-instance" : {
         "port" : 9080,
@@ -21,8 +22,8 @@
         "aliases" : [ "sitonline.com" ]
       }
     }
+ */
   },
-*/
   "run_list": [ 
     "recipe[tomee::common-packages]", 
     "recipe[java]",
