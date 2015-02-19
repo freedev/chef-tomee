@@ -20,9 +20,9 @@ Used with: Centos (6.2, 6.5) and Ubuntu (14.04)
 
 Download and install Vagrant: https://www.vagrantup.com/downloads.html
 
-   git clone https://github.com/freedev/vagrant-tomee.git
-   cd vagrant-tomee
-   vagrant up
+    git clone https://github.com/freedev/vagrant-tomee.git
+    cd vagrant-tomee
+    vagrant up
 
 ### Quick start with chef-solo
 
@@ -30,24 +30,24 @@ Download chef from: https://downloads.chef.io/chef-dk/
 
 For redhat execute:
 
-- wget https://opscode-omnibus-packages.s3.amazonaws.com/el/6/x86_64/chefdk-0.4.0-1.x86_64.rpm
-- rpm -i chefdk-0.4.0-1.x86_64.rpm
+    wget https://opscode-omnibus-packages.s3.amazonaws.com/el/6/x86_64/chefdk-0.4.0-1.x86_64.rpm
+    rpm -i chefdk-0.4.0-1.x86_64.rpm
 
 Then execute the following commands:
 
-- mkdir ~/install-tomee
-- mkdir -p /var/chef/cookbooks
-- mkdir -p /var/chef/data_bags/tomee_users
-- cd /var/chef/cookbooks/
-- git init
-- touch README.md
-- git add README.md
-- git commit -a -m "updates"
-- cd ~/install-tomee
-- knife cookbook site install tomee
-- cp /var/chef/cookbooks/tomee/templates/default/tomee.json .
-- cp /var/chef/cookbooks/tomee/templates/default/admin.json /var/chef/data_bags/tomee_users
-- chef-solo -j tomee.json
+    mkdir ~/install-tomee
+    mkdir -p /var/chef/cookbooks
+    mkdir -p /var/chef/data_bags/tomee_users
+    cd /var/chef/cookbooks/
+    git init
+    touch README.md
+    git add README.md
+    git commit -a -m "updates"
+    cd ~/install-tomee
+    knife cookbook site install tomee
+    cp /var/chef/cookbooks/tomee/templates/default/tomee.json .
+    cp /var/chef/cookbooks/tomee/templates/default/admin.json /var/chef/data_bags/tomee_users
+    chef-solo -j tomee.json
 
 ###Prerequisites
 This cookbook cames with a dependency to `java` and `openssl` cookbooks.<br>
