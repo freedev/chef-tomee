@@ -20,9 +20,9 @@ Used with: Centos (6.2, 6.5) and Ubuntu (14.04)
 
 Download and install Vagrant: https://www.vagrantup.com/downloads.html
 
-  git clone https://github.com/freedev/vagrant-tomee.git
-  cd vagrant-tomee
-  vagrant up
+   git clone https://github.com/freedev/vagrant-tomee.git
+   cd vagrant-tomee
+   vagrant up
 
 ### Quick start with chef-solo
 
