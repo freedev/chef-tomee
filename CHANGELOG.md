@@ -1,3 +1,15 @@
+# 0.13.0
+
+Added Vagrant quick start
+
+# 0.9.0
+
+fixed OpenSSLCookbook module
+
+# 0.8.0
+
+Added quick start reference
+
 # 0.6.0
 
 Added vhosts and aliases configuration
