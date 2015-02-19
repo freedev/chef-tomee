@@ -153,7 +153,7 @@ When `java` cookbook is executed it doesn't check for apt-get repository update,
 
 ## Usage
 
-### tomee::tomee
+### tomee::default
 
 Include `tomee` in your node's `run_list`, if you want install Java you must prepend `common-packages` and `java::default` :
 
