@@ -1,6 +1,0 @@
----
-vb_cpu_count: 2
-vb_cpu_exec_cap: xx
-vb_memory: 2048
-vb_name: Vagrant Hadoop
-vb_vram: 12

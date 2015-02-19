@@ -16,7 +16,15 @@ Used with: Centos (6.2, 6.5) and Ubuntu (14.04)
 - java
 - openssl
 
-### Quick start
+### Quick start with Vagrant
+
+Download and install Vagrant: https://www.vagrantup.com/downloads.html
+
+  git clone https://github.com/freedev/vagrant-tomee.git
+  cd vagrant-tomee
+  vagrant up
+
+### Quick start with chef-solo
 
 Download chef from: https://downloads.chef.io/chef-dk/
 
@@ -154,7 +162,7 @@ Include `tomee` in your node's `run_list`, if you want install Java you must pre
   "run_list": [
     "recipe[tomee::common-packages]",
     "recipe[java::default]",
-    "recipe[tomee::tomee]"
+    "recipe[tomee::default]"
   ]
 }
 ```
