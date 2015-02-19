@@ -10,7 +10,7 @@
 # require 'pp'
 
 # required for the secure_password method from the openssl cookbook
-::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
+::Chef::Recipe.send(:include, OpenSSLCookbook::Password)
 
 current_node = node['tomee']
 
