@@ -4,6 +4,8 @@
   "roles": [
     "manager",
     "admin",
+    "tomee-admin"
+    "manager-script"
     "manager-gui",
     "admin-gui"
   ]

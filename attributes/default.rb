@@ -5,8 +5,9 @@ default["tomee"]["name"]="tomee"
 default["tomee"]["user"]="tmuser"
 default["tomee"]["group"]="tomee"
 
-default["tomee"]["tomee_url"] = "http://apache.fastbull.org/tomee/tomee-1.7.1/apache-tomee-1.7.1-webprofile.tar.gz"
+default["tomee"]["tomee_url"] = "http://apache.fastbull.org/tomee/tomee-1.7.1/apache-tomee-1.7.1-plume.tar.gz"
 
+default["tomee"]["remote_debug"] = "-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 default["tomee"]["port"] = 8080
 default["tomee"]["proxy_port"] = nil
 default["tomee"]["ssl_port"] = 8443

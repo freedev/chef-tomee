@@ -158,7 +158,8 @@ action :configure do
       :authbind => instance_attributes['authbind'],
       :catalina_options => instance_attributes['catalina_options'],
       :endorsed_dir => instance_attributes['endorsed_dir'],
-      :catalina_pid => instance_attributes['catalina_pid']
+      :catalina_pid => instance_attributes['catalina_pid'],
+      :remote_debug => instance_attributes['remote_debug']
     })
     owner instance_attributes['user']
     group instance_attributes['group']
@@ -176,6 +177,11 @@ action :configure do
 #    notifies :restart, "service[#{instance}]"
   end
 
+  template "#{instance_attributes['config_dir']}/system.properties" do
+    source 'system.properties.erb'
+    mode '0644'
+  end
+  
   template "#{instance_attributes['config_dir']}/server.xml" do
     source 'tomee_server.xml.erb'
       variables ({
