@@ -4,7 +4,7 @@ maintainer_email "v.damore@gmail.com"
 license          'Apache 2.0'
 description      'Installs/Configures TomEE'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.14.0'
+version          '0.15.0'
 
 depends 'java', '~> 1.31.0'
 depends 'openssl', '~> 3.0.2'
